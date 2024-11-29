@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resume Builder</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container animate-container">
+    <div class="content">
+      <h1>Upload Your Resume</h1>
+      <form id="resumeForm" action="/upload" method="POST" enctype="multipart/form-data">
+        <label for="resumeFile" class="input-label">Upload your resume (DOCX or PDF):</label>
+        <input type="file" id="resumeFile" name="resumeFile" accept=".pdf,.docx" required>
+      
+        <label for="jobDescription" class="input-label">Enter the job description:</label>
+        <textarea id="jobDescription" name="jobDescription" rows="4" placeholder="Paste the job description here..." required></textarea>
+      
+        <label for="templateType" class="input-label">Select your resume template:</label>
+        <select id="templateType" name="templateType" required>
+          <option value="alta">Alta</option>
+          <option value="awesome">Awesome</option>
+          <option value="bgjc">BGJC</option>
+          <option value="deedy">Deedy</option>
+          <option value="modern">Modern</option>
+          <option value="plush">Plush</option>
+          <option value="simple">Simple</option>
+        </select>
+      
+        <div class="form-buttons">
+          <button type="button" class="templatePreview animate-btn" onclick="handlePreview()">Template Preview</button>
+          <button type="submit" class="submitForm animate-btn">Submit</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script src="/static/script.js"></script>
+</body>
+</html>
