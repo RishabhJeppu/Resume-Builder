@@ -326,7 +326,9 @@ class Groq:
 
     def generate_json_resume(self, jd_text):
         util = Utils()
-        dirs_list = os.listdir("../utils/uploads")
+        UPLOAD_DIR = "./utils/uploads"
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        dirs_list = os.listdir("./utils/uploads")
         if len(dirs_list)!=0 :
             dirs = dirs_list[0]
             cv_text = util.extract_text(f"../utils/uploads/{dirs}")
