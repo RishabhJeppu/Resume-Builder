@@ -326,55 +326,59 @@ class Groq:
 
     def generate_json_resume(self, jd_text):
         util = Utils()
-        dirs = os.listdir("../utils/uploads")[0]
-        cv_text = util.extract_text(f"../utils/uploads/{dirs}")
-        final_json = {}
-        resume_sections = [
-            {"prompt": self.BASICS_PROMPT, "key": "basics"},
-            {"prompt": self.EDUCATION_PROMPT, "key": "education"},
-            {"prompt": self.CERTIFICATES_PROMPT, "key": "awards"},
-            {"prompt": self.PROJECTS_PROMPT, "key": "projects"},
-            {"prompt": self.SKILLS_PROMPT, "key": "skills"},
-            {"prompt": self.WORK_PROMPT, "key": "work"},
-        ]
-
-        for section in stqdm(resume_sections, desc="Processing resume sections..."):
-            try:
-                # Replace placeholders
-                filled_cv_prompt = section["prompt"].replace(
-                    self.CV_TEXT_PLACEHOLDER, cv_text
-                )
-                filled_jd_prompt = section["prompt"].replace(
-                    self.JD_TEXT_PLACEHOLDER, jd_text
-                )
-
-                # Invoke LLM
-                response = self.llm.invoke(
-                    [
-                        SystemMessage(content=self.SYSTEM_PROMPT),
-                        HumanMessage(content=filled_cv_prompt),
-                        HumanMessage(content=filled_jd_prompt),
-                    ]
-                )
-
-                # Parse response
+        UPLOAD_DIR = "./utils/uploads"
+        os.makedirs(UPLOAD_DIR, exist_ok=True)
+        dirs_list = os.listdir("./utils/uploads")
+        if len(dirs_list)!=0 :
+            dirs = dirs_list[0]
+            cv_text = util.extract_text(f"../utils/uploads/{dirs}")
+            final_json = {}
+            resume_sections = [
+                {"prompt": self.BASICS_PROMPT, "key": "basics"},
+                {"prompt": self.EDUCATION_PROMPT, "key": "education"},
+                {"prompt": self.CERTIFICATES_PROMPT, "key": "awards"},
+                {"prompt": self.PROJECTS_PROMPT, "key": "projects"},
+                {"prompt": self.SKILLS_PROMPT, "key": "skills"},
+                {"prompt": self.WORK_PROMPT, "key": "work"},
+            ]
+    
+            for section in stqdm(resume_sections, desc="Processing resume sections..."):
                 try:
-                    answer = json.loads(response.content)
-                except json.JSONDecodeError:
-                    print(f"Invalid JSON for {section['key']} section")
-                    continue
-
-                # Ensure section is wrapped correctly
-                if section["key"] not in answer:
-                    answer = {section["key"]: answer}
-
-                # Update final JSON
-                final_json.update(answer)
-
-            except Exception as e:
-                print(f"Error processing {section['key']} section: {e}")
-
-        print(final_json)
+                    # Replace placeholders
+                    filled_cv_prompt = section["prompt"].replace(
+                        self.CV_TEXT_PLACEHOLDER, cv_text
+                    )
+                    filled_jd_prompt = section["prompt"].replace(
+                        self.JD_TEXT_PLACEHOLDER, jd_text
+                    )
+    
+                    # Invoke LLM
+                    response = self.llm.invoke(
+                        [
+                            SystemMessage(content=self.SYSTEM_PROMPT),
+                            HumanMessage(content=filled_cv_prompt),
+                            HumanMessage(content=filled_jd_prompt),
+                        ]
+                    )
+    
+                    # Parse response
+                    try:
+                        answer = json.loads(response.content)
+                    except json.JSONDecodeError:
+                        print(f"Invalid JSON for {section['key']} section")
+                        continue
+    
+                    # Ensure section is wrapped correctly
+                    if section["key"] not in answer:
+                        answer = {section["key"]: answer}
+    
+                    # Update final JSON
+                    final_json.update(answer)
+    
+                except Exception as e:
+                    print(f"Error processing {section['key']} section: {e}")
+    
+            print(final_json)
 
     def generate_gmail_message(self):
         # prompt_extract = PromptTemplate.from_template()
