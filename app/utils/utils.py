@@ -12,12 +12,12 @@ class Utils:
             api_key=os.getenv("LLAMA_CLOUD_API_KEY"), result_type="text"
         )
 
-    def extract_text(self, file_path):
-        file_extractor = {".pdf": self.parser}  # map .pdf files to LlamaParse
-        documents = SimpleDirectoryReader(
+    async def extract_text(self, file_path):
+        file_extractor = {".pdf": self.parser}  # Assume parser is defined elsewhere
+        documents = await SimpleDirectoryReader(
             input_files=[file_path],
             file_extractor=file_extractor,
-        ).load_data()
+        ).aload_data()
         text_content = [doc.text for doc in documents]
         return "\n".join(text_content)
 

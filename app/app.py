@@ -16,7 +16,6 @@ HTML_TEMPLATES_DIR = "./html_templates"
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 
-# Serve the main HTML page
 @app.get("/", response_class=HTMLResponse)
 async def read_root():
     with open(os.path.join(HTML_TEMPLATES_DIR, "index.html"), "r") as file:
@@ -41,20 +40,27 @@ async def upload_resume(
     jobDescription: str = Form(...),
     templateType: str = Form(...),
 ):
-    os.makedirs(UPLOAD_DIR, exist_ok=True)
     try:
+        # Save the uploaded file
         file_path = os.path.join(UPLOAD_DIR, resumeFile.filename)
         with open(file_path, "wb") as file:
-            content = await resumeFile.read()
+            content = await resumeFile.read()  # Await because it's async
             file.write(content)
 
+        # Locate the uploaded file
+        dirs = os.listdir("./utils/uploads/")[0]
+        file_path = f"./utils/uploads/{dirs}"
+        print(file_path)
+
         llm = Groq()
-        llm.generate_json_resume(jobDescription)
+        json1 = await llm.generate_json_resume(
+            jd_text=jobDescription, file_path=file_path
+        )
+        print(json1)
 
         return RedirectResponse(url="/success", status_code=303)
 
     except Exception as e:
-        # Handle errors and log them
         print(f"Error saving file: {e}")
         return HTMLResponse(
             content="An error occurred during file upload.", status_code=500

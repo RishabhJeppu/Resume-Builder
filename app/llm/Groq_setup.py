@@ -324,10 +324,23 @@ class Groq:
             model="llama-3.1-70b-versatile",
         )
 
-    def generate_json_resume(self, jd_text):
+    async def generate_json_resume(self, jd_text, file_path):
         util = Utils()
-        dirs = os.listdir("../utils/uploads")[0]
-        cv_text = util.extract_text(f"../utils/uploads/{dirs}")
+        """
+        directory = os.path.abspath("../utils/uploads/")
+        print("Directory being checked:", directory)
+
+        if not os.path.exists(directory):
+            raise FileNotFoundError(f"Directory '{directory}' does not exist.")
+
+        files = [f for f in os.listdir(directory) if not f.startswith(".")]
+        if not files:
+            raise FileNotFoundError(f"No visible files found in '{directory}'.")
+
+        dirs = files[0]
+        print(f"Using file: {dirs}")
+        """
+        cv_text = await util.extract_text(file_path=file_path)
         final_json = {}
         resume_sections = [
             {"prompt": self.BASICS_PROMPT, "key": "basics"},
@@ -374,7 +387,7 @@ class Groq:
             except Exception as e:
                 print(f"Error processing {section['key']} section: {e}")
 
-        print(final_json)
+        return final_json
 
     def generate_gmail_message(self):
         # prompt_extract = PromptTemplate.from_template()
@@ -383,33 +396,3 @@ class Groq:
     def generate_linkedin_message(self):
         # promt_extract = PromptTemplate.from_template()
         pass
-
-
-llm = Groq()
-
-json1 = llm.generate_json_resume(
-    """Job description
-This is a remote internship role for an Artificial Intelligence Intern
-As an AI Intern, you will be responsible for assisting in the development and implementation of AI models and algorithms
-You will work on data analysis, machine learning, programming, and other tasks related to AI development
-This internship will provide you with valuable hands-on experience in the field of artificial intelligence
-Job Requirement
-Computer Science and Programming skills
-Analytical Skills and Data Science knowledge
-Experience or knowledge in Machine Learning
-Excellent problem-solving and critical thinking abilities
-Strong communication and teamwork skills
-Ability to work independently and remotely
-Experience with AI frameworks and tools is a plus
-Currently pursuing or recently completed a degree in Computer Science, Data Science, or a related field
-Role: Data Science & Machine Learning - Other
-Industry Type: Internet
-Department: Data Science & Analytics
-Employment Type: Full Time, Permanent
-Role Category: Data Science & Machine Learning
-Education
-UG: Any Graduate
-PG: Any Postgraduate""",
-)
-
-print(json1)
